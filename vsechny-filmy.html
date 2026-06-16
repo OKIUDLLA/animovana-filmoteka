@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Filmotéka PLUS – databáze všech filmů přes TMDB: hledání, plakáty, obsazení, hodnocení a kde sledovat.">
+<meta name="description" content="Filmotéka PLUS – databáze všech filmů přes TMDB: hledání, filtry, plakáty, obsazení, hodnocení a kde sledovat.">
 <title>Filmotéka PLUS — všechny filmy</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%9E%EF%B8%8F%3C/text%3E%3C/svg%3E">
 <style>
@@ -16,34 +16,34 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 .logo span{font-size:13px;color:var(--mut);-webkit-text-fill-color:var(--mut)}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .mini{font-size:12px;color:var(--mut)}
-.controls{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,var(--bg) 72%,transparent);padding:12px 0 14px;backdrop-filter:blur(5px);margin-top:8px}
-input[type=text],input[type=password]{background:var(--card);border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:12px 14px;font-size:15px;outline:none;width:100%}
-input:focus{border-color:var(--acc)}
-.btn{background:linear-gradient(90deg,var(--acc),var(--acc2));border:none;color:#1a1205;font-weight:700;padding:12px 18px;border-radius:10px;cursor:pointer;font-size:14px}
+.controls{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,var(--bg) 80%,transparent);padding:12px 0 12px;backdrop-filter:blur(5px);margin-top:10px}
+input[type=text],input[type=password],select{background:var(--card);border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:11px 13px;font-size:14px;outline:none}
+input[type=text]{width:100%}input:focus,select:focus{border-color:var(--acc)}select{cursor:pointer}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tab{background:var(--card2);border:1px solid var(--line);color:var(--mut);padding:8px 14px;border-radius:20px;cursor:pointer;font-size:13.5px;font-weight:600}
+.tab.on{background:linear-gradient(90deg,var(--acc),var(--acc2));color:#1a1205;border:none}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btn{background:linear-gradient(90deg,var(--acc),var(--acc2));border:none;color:#1a1205;font-weight:700;padding:11px 18px;border-radius:10px;cursor:pointer;font-size:14px}
 .btn.sec{background:var(--card2);color:var(--tx);border:1px solid var(--line)}
-.count{color:var(--mut);font-size:13px;margin:10px 2px 8px}
+.count{color:var(--mut);font-size:13px;margin:8px 2px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:.15s;display:flex;flex-direction:column}
 .card:hover{transform:translateY(-4px);border-color:var(--acc);box-shadow:0 12px 32px rgba(0,0,0,.45)}
 .poster{position:relative;aspect-ratio:2/3;background:linear-gradient(160deg,#2c3e50,#1a2138);display:flex;align-items:center;justify-content:center}
-.poster img{width:100%;height:100%;object-fit:cover}
-.poster .ph{font-size:40px;opacity:.5}
+.poster img{width:100%;height:100%;object-fit:cover}.poster .ph{font-size:40px;opacity:.5}
 .badge{position:absolute;top:10px;right:10px;font-size:12px;font-weight:700;padding:3px 8px;border-radius:8px;color:#0c1018;background:var(--acc)}
 .cbody{padding:10px 12px 12px}.ct{font-weight:700;font-size:14px;line-height:1.2}.cy{color:var(--mut);font-size:12px;margin-top:4px}
+.more{text-align:center;margin:22px 0}
 .empty{text-align:center;color:var(--mut);padding:50px 16px;line-height:1.6}
 footer{color:var(--mut);font-size:12px;text-align:center;margin-top:36px;line-height:1.6}
-/* setup */
 .setup{max-width:620px;margin:40px auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px}
 .setup h2{margin-bottom:10px}.setup p,.setup li{color:#dfe6f3;font-size:14.5px;line-height:1.6}
 .setup ol{margin:12px 0 16px 20px}.setup .row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
-.note{color:var(--mut);font-size:12.5px;margin-top:12px}
-.err{color:var(--bad);font-size:13px;margin-top:10px;min-height:16px}
-/* modal */
+.note{color:var(--mut);font-size:12.5px;margin-top:12px}.err{color:var(--bad);font-size:13px;margin-top:10px;min-height:16px}
 .ov{position:fixed;inset:0;background:rgba(4,7,12,.8);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:24px 16px;backdrop-filter:blur(4px);overflow:auto}
 .ov.on{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--line);border-radius:18px;max-width:820px;width:100%;overflow:hidden}
-.mtop{display:flex;gap:0;flex-wrap:wrap}
-.mp{width:250px;aspect-ratio:2/3;flex-shrink:0;background:#0c1018;display:flex;align-items:center;justify-content:center}
+.mtop{display:flex;flex-wrap:wrap}.mp{width:250px;aspect-ratio:2/3;flex-shrink:0;background:#0c1018;display:flex;align-items:center;justify-content:center}
 .mp img{width:100%;height:100%;object-fit:cover}.mp .ph{font-size:60px;opacity:.5}
 .mhead{flex:1;min-width:280px;padding:22px;position:relative}
 .close{position:absolute;top:12px;right:14px;background:rgba(12,16,24,.7);border:1px solid var(--line);color:#fff;width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;z-index:5}
@@ -57,12 +57,9 @@ footer{color:var(--mut);font-size:12px;text-align:center;margin-top:36px;line-he
 .cast{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px}
 .actor{text-align:center}.actor .ap{width:100%;aspect-ratio:2/3;border-radius:10px;object-fit:cover;background:var(--card2);border:1px solid var(--line)}
 .actor .an{font-size:12px;font-weight:600;margin-top:5px;line-height:1.2}.actor .ac{font-size:11px;color:var(--mut);line-height:1.2}
-.prov{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.prov img{width:42px;height:42px;border-radius:9px;border:1px solid var(--line)}
-.video{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;border:1px solid var(--line);margin-top:6px}
-.video iframe{width:100%;height:100%;border:0}
-.links{display:flex;flex-wrap:wrap;gap:8px}
-.lnk{background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--tx)}.lnk:hover{border-color:var(--acc);text-decoration:none}
+.prov{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.prov img{width:42px;height:42px;border-radius:9px;border:1px solid var(--line)}
+.video{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;border:1px solid var(--line);margin-top:6px}.video iframe{width:100%;height:100%;border:0}
+.links{display:flex;flex-wrap:wrap;gap:8px}.lnk{background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:13px;font-weight:600;color:var(--tx)}.lnk:hover{border-color:var(--acc);text-decoration:none}
 @media(max-width:560px){.mp{width:100%;aspect-ratio:16/9}}
 </style>
 </head>
@@ -83,103 +80,120 @@ footer{color:var(--mut);font-size:12px;text-align:center;margin-top:36px;line-he
     </ol>
     <input type="password" id="keyInput" placeholder="Vlož svůj TMDB API klíč (v3)…" autocomplete="off">
     <div class="err" id="setupErr"></div>
-    <div class="row">
-      <button class="btn" id="saveKey">Uložit a spustit</button>
-    </div>
+    <div class="row"><button class="btn" id="saveKey">Uložit a spustit</button></div>
     <div class="note">🔒 Klíč se ukládá jen ve tvém prohlížeči (localStorage). Neodesílá se nikam jinam než přímo do TMDB a nedostane se do veřejného repozitáře.</div>
   </div>
 
   <div id="app" style="display:none">
     <div class="controls">
+      <div class="tabs">
+        <div class="tab on" data-tab="trending">🔥 Populární</div>
+        <div class="tab" data-tab="top">⭐ Nejlépe hodnocené</div>
+        <div class="tab" data-tab="now">🎬 Nově v kinech</div>
+      </div>
       <input type="text" id="q" placeholder="🔍 Hledej jakýkoli film (česky i originál)…">
+      <div class="filters">
+        <select id="fgenre"><option value="">Žánr (vše)</option></select>
+        <select id="fdecade"><option value="">Dekáda (vše)</option></select>
+        <select id="fsort">
+          <option value="popularity.desc">Řadit: populární</option>
+          <option value="vote_average.desc">Řadit: hodnocení</option>
+          <option value="primary_release_date.desc">Řadit: nejnovější</option>
+          <option value="primary_release_date.asc">Řadit: nejstarší</option>
+        </select>
+        <button class="btn sec" id="reset">Vyčistit</button>
+      </div>
     </div>
     <div class="count" id="count"></div>
     <div class="grid" id="grid"></div>
+    <div class="more" id="moreWrap" style="display:none"><button class="btn sec" id="moreBtn">Načíst další</button></div>
     <div class="empty" id="empty" style="display:none"></div>
-    <footer>Data &amp; plakáty: <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a> (tento produkt používá TMDB API, ale není jí schválen ani certifikován). „Kde sledovat" pro ČR přes JustWatch/TMDB.</footer>
+    <footer>Data &amp; plakáty: <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a> (používá TMDB API, není jí schváleno). „Kde sledovat" pro ČR přes JustWatch/TMDB.</footer>
   </div>
 </div>
 
 <div class="ov" id="ov"><div class="modal" id="modal"></div></div>
 
 <script>
-const LS='tmdb_key_v1';
-const IMG='https://image.tmdb.org/t/p/';
-const el=id=>document.getElementById(id);
+const LS='tmdb_key_v1', IMG='https://image.tmdb.org/t/p/', el=id=>document.getElementById(id);
 let KEY=localStorage.getItem(LS)||'';
+let state={mode:'trending',page:1,total:1,items:[]};
 
-function show(view){el('setup').style.display=view==='setup'?'block':'none';el('app').style.display=view==='app'?'block':'none';el('changeKey').style.display=view==='app'?'inline':'none';}
-function api(path,params){const u=new URL('https://api.themoviedb.org/3/'+path);u.searchParams.set('api_key',KEY);u.searchParams.set('language','cs-CZ');for(const k in (params||{}))u.searchParams.set(k,params[k]);return fetch(u).then(r=>{if(r.status===401)throw new Error('401');if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});}
+function show(v){el('setup').style.display=v==='setup'?'block':'none';el('app').style.display=v==='app'?'block':'none';el('changeKey').style.display=v==='app'?'inline':'none';}
+function api(path,params){const u=new URL('https://api.themoviedb.org/3/'+path);u.searchParams.set('api_key',KEY);u.searchParams.set('language','cs-CZ');for(const k in(params||{}))if(params[k]!=='')u.searchParams.set(k,params[k]);return fetch(u).then(r=>{if(r.status===401)throw new Error('401');if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});}
 
-el('saveKey').onclick=async()=>{
-  const k=el('keyInput').value.trim();el('setupErr').textContent='';
-  if(!k){el('setupErr').textContent='Vlož klíč.';return;}
-  KEY=k;
-  try{await api('configuration');localStorage.setItem(LS,k);show('app');loadTrending();}
-  catch(e){KEY='';el('setupErr').textContent=(e.message==='401')?'Neplatný klíč — zkontroluj API Key (v3 auth).':'Chyba spojení s TMDB: '+e.message;}
-};
-el('changeKey').onclick=(e)=>{e.preventDefault();localStorage.removeItem(LS);KEY='';el('keyInput').value='';show('setup');};
+el('saveKey').onclick=async()=>{const k=el('keyInput').value.trim();el('setupErr').textContent='';if(!k){el('setupErr').textContent='Vlož klíč.';return;}KEY=k;
+  try{await api('configuration');localStorage.setItem(LS,k);initApp();}catch(e){KEY='';el('setupErr').textContent=(e.message==='401')?'Neplatný klíč — zkontroluj API Key (v3 auth).':'Chyba spojení s TMDB: '+e.message;}};
+el('changeKey').onclick=e=>{e.preventDefault();localStorage.removeItem(LS);KEY='';el('keyInput').value='';show('setup');};
 
-function rcol(v){return v>=7.5?'var(--good)':v>=6?'var(--ok)':'var(--bad)';}
-function card(m){
-  const img=m.poster_path?`<img src="${IMG}w342${m.poster_path}" alt="" loading="lazy">`:`<span class="ph">🎬</span>`;
-  const yr=(m.release_date||'').slice(0,4)||'—';
-  const rt=m.vote_average?`<span class="badge">${m.vote_average.toFixed(1)}</span>`:'';
-  return `<div class="card" onclick="openM(${m.id})"><div class="poster">${img}${rt}</div><div class="cbody"><div class="ct">${m.title||m.original_title||''}</div><div class="cy">${yr}</div></div></div>`;
+function loadGenres(){api('genre/movie/list').then(d=>{el('fgenre').innerHTML='<option value="">Žánr (vše)</option>'+(d.genres||[]).map(g=>`<option value="${g.id}">${g.name}</option>`).join('');});}
+(function decades(){let h='<option value="">Dekáda (vše)</option>';for(let y=2020;y>=1930;y-=10)h+=`<option value="${y}">${y}s</option>`;el('fdecade').innerHTML=h;})();
+
+function card(m){const img=m.poster_path?`<img src="${IMG}w342${m.poster_path}" alt="" loading="lazy">`:`<span class="ph">🎬</span>`;
+  const yr=(m.release_date||'').slice(0,4)||'—';const rt=m.vote_average?`<span class="badge">${m.vote_average.toFixed(1)}</span>`:'';
+  return `<div class="card" onclick="openM(${m.id})"><div class="poster">${img}${rt}</div><div class="cbody"><div class="ct">${m.title||m.original_title||''}</div><div class="cy">${yr}</div></div></div>`;}
+
+function endpointFor(){
+  const q=el('q').value.trim(), g=el('fgenre').value, dec=el('fdecade').value, sort=el('fsort').value;
+  if(q) return {path:'search/movie',params:{query:q,include_adult:'false',page:state.page}};
+  if(g||dec||sort!=='popularity.desc'){const p={include_adult:'false','vote_count.gte':sort==='vote_average.desc'?200:0,sort_by:sort,page:state.page};
+    if(g)p.with_genres=g; if(dec){p['primary_release_date.gte']=dec+'-01-01';p['primary_release_date.lte']=(+dec+9)+'-12-31';}
+    return {path:'discover/movie',params:p};}
+  if(state.mode==='top') return {path:'movie/top_rated',params:{page:state.page}};
+  if(state.mode==='now') return {path:'movie/now_playing',params:{region:'CZ',page:state.page}};
+  return {path:'trending/movie/week',params:{page:state.page}};
 }
-function renderList(title,items){
-  el('count').textContent=title+' · '+items.length;
-  el('grid').innerHTML=items.map(card).join('');
-  el('empty').style.display=items.length?'none':'block';
-  if(!items.length)el('empty').textContent='Nic nenalezeno.';
-}
-function loadTrending(){api('trending/movie/week').then(d=>renderList('Populární tento týden',(d.results||[]))).catch(showApiErr);}
-function search(q){if(!q){loadTrending();return;}api('search/movie',{query:q,include_adult:'false'}).then(d=>renderList('Výsledky: „'+q+'“',(d.results||[]))).catch(showApiErr);}
-function showApiErr(e){el('grid').innerHTML='';el('empty').style.display='block';el('empty').textContent=(e.message==='401')?'Neplatný TMDB klíč — klikni na „změnit TMDB klíč".':'Chyba TMDB: '+e.message;}
-let t;el('q').addEventListener('input',e=>{clearTimeout(t);const v=e.target.value.trim();t=setTimeout(()=>search(v),350);});
+function titleFor(){const q=el('q').value.trim();if(q)return 'Výsledky: „'+q+'“';if(el('fgenre').value||el('fdecade').value||el('fsort').value!=='popularity.desc')return 'Filtrované filmy';return {trending:'Populární tento týden',top:'Nejlépe hodnocené',now:'Nově v kinech'}[state.mode];}
 
-function openM(id){
-  api('movie/'+id,{append_to_response:'credits,videos,watch/providers'}).then(m=>{
-    const yr=(m.release_date||'').slice(0,4);
-    const poster=m.poster_path?`<img src="${IMG}w500${m.poster_path}" alt="">`:`<span class="ph">🎬</span>`;
-    const genres=(m.genres||[]).map(g=>`<span class="chip">${g.name}</span>`).join('');
-    const dir=(m.credits&&m.credits.crew||[]).filter(c=>c.job==='Director').map(c=>c.name).join(', ');
-    const cast=(m.credits&&m.credits.cast||[]).slice(0,10).map(c=>{
-      const p=c.profile_path?`${IMG}w185${c.profile_path}`:'';
-      return `<div class="actor">${p?`<img class="ap" src="${p}" loading="lazy" alt="">`:`<div class="ap" style="display:flex;align-items:center;justify-content:center;font-size:22px;opacity:.4">👤</div>`}<div class="an">${c.name}</div><div class="ac">${c.character||''}</div></div>`;
-    }).join('');
-    const tr=(m.videos&&m.videos.results||[]).find(v=>v.site==='YouTube'&&(v.type==='Trailer'||v.type==='Teaser'));
-    const trailer=tr?`<div class="sec-t">Trailer</div><div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${tr.key}" allowfullscreen loading="lazy"></iframe></div>`:'';
-    const wp=(m['watch/providers']&&m['watch/providers'].results&&m['watch/providers'].results.CZ)||null;
-    let prov='';
-    if(wp){const list=[...(wp.flatrate||[]),...(wp.rent||[]),...(wp.buy||[])];const seen={};const uniq=list.filter(p=>seen[p.provider_id]?false:(seen[p.provider_id]=1));
-      if(uniq.length)prov=`<div class="sec-t">Kde sledovat (ČR)</div><div class="prov">${uniq.map(p=>`<img src="${IMG}w92${p.logo_path}" title="${p.provider_name}" alt="${p.provider_name}">`).join('')}</div>`;}
-    const q=encodeURIComponent(m.title||m.original_title||'');
-    const links=[['ČSFD','https://www.csfd.cz/hledat/?q='+q],['Kinobox','https://www.kinobox.cz/hledani?query='+q],['IMDb', m.imdb_id?('https://www.imdb.com/title/'+m.imdb_id+'/'):('https://www.imdb.com/find/?q='+q)],['TMDB','https://www.themoviedb.org/movie/'+m.id]];
-    el('modal').innerHTML=`
-      <div class="mtop"><div class="mp">${poster}</div>
-        <div class="mhead"><button class="close" onclick="closeM()">×</button>
-          <div class="mt">${m.title||m.original_title}</div>
-          <div class="morig">${m.original_title&&m.original_title!==m.title?m.original_title+' · ':''}${yr||''}${m.runtime?' · '+m.runtime+' min':''}</div>
-          <div class="chips">${genres}</div>
-          ${m.vote_average?`<span class="rbox"><b>${m.vote_average.toFixed(1)}</b><small>TMDB</small></span>`:''}
-          ${dir?`<div class="sec-t">Režie</div><div style="font-size:14px">${dir}</div>`:''}
-        </div></div>
-      <div class="mbody">
-        ${m.overview?`<div class="desc">${m.overview}</div>`:'<div class="desc" style="color:var(--mut)">Český popis není k dispozici.</div>'}
-        ${prov}
-        ${cast?`<div class="sec-t">Obsazení</div><div class="cast">${cast}</div>`:''}
-        ${trailer}
-        <div class="sec-t">Odkazy</div><div class="links">${links.map(l=>`<a class="lnk" href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`).join('')}</div>
-      </div>`;
-    el('ov').classList.add('on');
-  }).catch(showApiErr);
-}
+function load(reset){const ep=endpointFor();
+  api(ep.path,ep.params).then(d=>{
+    if(reset){state.items=[];}
+    state.items=state.items.concat(d.results||[]);state.total=d.total_pages||1;
+    el('count').textContent=titleFor()+' · '+state.items.length+(d.total_results?(' z ~'+d.total_results):'');
+    el('grid').innerHTML=state.items.map(card).join('');
+    el('empty').style.display=state.items.length?'none':'block';if(!state.items.length)el('empty').textContent='Nic nenalezeno.';
+    el('moreWrap').style.display=(state.page<state.total&&state.items.length)?'block':'none';
+  }).catch(showApiErr);}
+
+function reload(){state.page=1;load(true);}
+function showApiErr(e){el('grid').innerHTML='';el('moreWrap').style.display='none';el('empty').style.display='block';el('empty').textContent=(e.message==='401')?'Neplatný TMDB klíč — klikni na „změnit TMDB klíč".':'Chyba TMDB: '+e.message;}
+
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');state.mode=t.dataset.tab;el('q').value='';el('fgenre').value='';el('fdecade').value='';el('fsort').value='popularity.desc';reload();});
+let tm;el('q').addEventListener('input',()=>{clearTimeout(tm);tm=setTimeout(reload,350);});
+['fgenre','fdecade','fsort'].forEach(id=>el(id).addEventListener('change',reload));
+el('reset').onclick=()=>{el('q').value='';el('fgenre').value='';el('fdecade').value='';el('fsort').value='popularity.desc';reload();};
+el('moreBtn').onclick=()=>{state.page++;load(false);};
+
+function openM(id){api('movie/'+id,{append_to_response:'credits,videos,watch/providers'}).then(m=>{
+  const yr=(m.release_date||'').slice(0,4);
+  const poster=m.poster_path?`<img src="${IMG}w500${m.poster_path}" alt="">`:`<span class="ph">🎬</span>`;
+  const genres=(m.genres||[]).map(g=>`<span class="chip">${g.name}</span>`).join('');
+  const dir=((m.credits&&m.credits.crew)||[]).filter(c=>c.job==='Director').map(c=>c.name).join(', ');
+  const cast=((m.credits&&m.credits.cast)||[]).slice(0,10).map(c=>{const p=c.profile_path?`${IMG}w185${c.profile_path}`:'';
+    return `<div class="actor">${p?`<img class="ap" src="${p}" loading="lazy" alt="">`:`<div class="ap" style="display:flex;align-items:center;justify-content:center;font-size:22px;opacity:.4">👤</div>`}<div class="an">${c.name}</div><div class="ac">${c.character||''}</div></div>`;}).join('');
+  const tr=((m.videos&&m.videos.results)||[]).find(v=>v.site==='YouTube'&&(v.type==='Trailer'||v.type==='Teaser'));
+  const trailer=tr?`<div class="sec-t">Trailer</div><div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${tr.key}" allowfullscreen loading="lazy"></iframe></div>`:'';
+  const wp=(m['watch/providers']&&m['watch/providers'].results&&m['watch/providers'].results.CZ)||null;let prov='';
+  if(wp){const list=[...(wp.flatrate||[]),...(wp.rent||[]),...(wp.buy||[])];const seen={};const uq=list.filter(p=>seen[p.provider_id]?false:(seen[p.provider_id]=1));
+    if(uq.length)prov=`<div class="sec-t">Kde sledovat (ČR)</div><div class="prov">${uq.map(p=>`<img src="${IMG}w92${p.logo_path}" title="${p.provider_name}" alt="${p.provider_name}">`).join('')}</div>`;}
+  const q=encodeURIComponent(m.title||m.original_title||'');
+  const links=[['ČSFD','https://www.csfd.cz/hledat/?q='+q],['Kinobox','https://www.kinobox.cz/hledani?query='+q],['IMDb',m.imdb_id?('https://www.imdb.com/title/'+m.imdb_id+'/'):('https://www.imdb.com/find/?q='+q)],['TMDB','https://www.themoviedb.org/movie/'+m.id]];
+  el('modal').innerHTML=`<div class="mtop"><div class="mp">${poster}</div><div class="mhead"><button class="close" onclick="closeM()">×</button>
+    <div class="mt">${m.title||m.original_title}</div>
+    <div class="morig">${m.original_title&&m.original_title!==m.title?m.original_title+' · ':''}${yr||''}${m.runtime?' · '+m.runtime+' min':''}</div>
+    <div class="chips">${genres}</div>${m.vote_average?`<span class="rbox"><b>${m.vote_average.toFixed(1)}</b><small>TMDB</small></span>`:''}
+    ${dir?`<div class="sec-t">Režie</div><div style="font-size:14px">${dir}</div>`:''}</div></div>
+    <div class="mbody">${m.overview?`<div class="desc">${m.overview}</div>`:'<div class="desc" style="color:var(--mut)">Český popis není k dispozici.</div>'}
+    ${prov}${cast?`<div class="sec-t">Obsazení</div><div class="cast">${cast}</div>`:''}${trailer}
+    <div class="sec-t">Odkazy</div><div class="links">${links.map(l=>`<a class="lnk" href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`).join('')}</div></div>`;
+  el('ov').classList.add('on');
+}).catch(showApiErr);}
 function closeM(){el('ov').classList.remove('on');}
 el('ov').addEventListener('click',e=>{if(e.target.id==='ov')closeM();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM();});
 
-if(KEY){show('app');loadTrending();}else{show('setup');}
+function initApp(){show('app');loadGenres();reload();}
+if(KEY)initApp();else show('setup');
 </script>
 </body>
 </html>
