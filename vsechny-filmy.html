@@ -161,19 +161,22 @@ el('moreBtn').onclick=()=>{state.page++;load(false);};
 
 function openM(d){
   el('modal').innerHTML=`<div style="padding:40px;text-align:center;color:var(--mut)">Načítám detail…</div>`;el('ov').classList.add('on');
-  const detQ=`SELECT (GROUP_CONCAT(DISTINCT ?dirL;separator=", ") AS ?dir) (GROUP_CONCAT(DISTINCT ?genL;separator=", ") AS ?genres) (GROUP_CONCAT(DISTINCT ?couL;separator=", ") AS ?countries) (SAMPLE(?dur) AS ?runtime) (SAMPLE(?orig) AS ?orig) (SAMPLE(?img) AS ?img) WHERE { VALUES ?film {wd:${d.id}}
+  const detQ=`SELECT (GROUP_CONCAT(DISTINCT ?dirL;separator=", ") AS ?dir) (GROUP_CONCAT(DISTINCT ?genL;separator=", ") AS ?genres) (GROUP_CONCAT(DISTINCT ?couL;separator=", ") AS ?countries) (SAMPLE(?dur) AS ?runtime) (SAMPLE(?orig) AS ?orig) (SAMPLE(?img) AS ?img) (SAMPLE(?cs) AS ?cstitle) WHERE { VALUES ?film {wd:${d.id}}
     OPTIONAL{?film wdt:P57 ?dir. ?dir rdfs:label ?dirL. FILTER(LANG(?dirL)="en")}
     OPTIONAL{?film wdt:P136 ?gen. ?gen rdfs:label ?genL. FILTER(LANG(?genL)="cs")}
     OPTIONAL{?film wdt:P495 ?cou. ?cou rdfs:label ?couL. FILTER(LANG(?couL)="cs")}
-    OPTIONAL{?film wdt:P2047 ?dur.} OPTIONAL{?film wdt:P1476 ?orig.} OPTIONAL{?film wdt:P18 ?img.} }`;
+    OPTIONAL{?film wdt:P2047 ?dur.} OPTIONAL{?film wdt:P1476 ?orig.} OPTIONAL{?film wdt:P18 ?img.}
+    OPTIONAL{?art schema:about ?film ; schema:isPartOf <https://cs.wikipedia.org/> ; schema:name ?cs.} }`;
   const castQ=`SELECT DISTINCT ?actorLabel ?img WHERE { wd:${d.id} wdt:P161 ?actor. ?actor rdfs:label ?actorLabel. FILTER(LANG(?actorLabel) IN("cs","en")) OPTIONAL{?actor wdt:P18 ?img.} } LIMIT 30`;
   Promise.all([sparql(detQ).catch(()=>null),sparql(castQ).catch(()=>null),
-    fetch('https://cs.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(d.title)).then(r=>r.ok?r.json():null).catch(()=>null),
     wikiPoster(d.title,d.year)
-  ]).then(([det,castR,sum,poster])=>{
+  ]).then(([det,castR,poster])=>{
     const b=det&&det.results.bindings[0]||{};
     const dir=b.dir&&b.dir.value, genres=b.genres&&b.genres.value, countries=b.countries&&b.countries.value, runtime=b.runtime&&Math.round(+b.runtime.value), orig=b.orig&&b.orig.value;
+    const csTitle=(b.cstitle&&b.cstitle.value)||(d.title+' (film)');
     const pimg=poster||(b.img?commons(b.img.value,500):'')||(d.fb||'');
+    return fetch('https://cs.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(csTitle)).then(r=>r.ok?r.json():null).catch(()=>null).then(sum=>({b,dir,genres,countries,runtime,orig,pimg,castR,sum,csTitle}));
+  }).then(({b,dir,genres,countries,runtime,orig,pimg,castR,sum})=>{
     let seen={};const cast=((castR&&castR.results.bindings)||[]).filter(c=>{const n=c.actorLabel.value;if(seen[n])return false;seen[n]=1;return true;}).slice(0,12).map(c=>{
       const p=c.img?commons(c.img.value,185):'';
       return `<div class="actor">${p?`<img class="ap" src="${p}" loading="lazy" alt="">`:`<div class="ap" style="display:flex;align-items:center;justify-content:center;font-size:22px;opacity:.4">👤</div>`}<div class="an">${c.actorLabel.value}</div></div>`;}).join('');
