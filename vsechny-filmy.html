@@ -107,14 +107,17 @@ function buildQuery(){
   const order = sort==='new' ? 'DESC(?year)' : sort==='old' ? 'ASC(?year)' : (q?'DESC(?links)':'DESC(?links)');
   const lim = q ? 60 : state.perPage;
   const offClause = q ? '' : (' OFFSET '+off);
-  return `SELECT ?film ?filmLabel (SAMPLE(?y) AS ?year) (SAMPLE(?imdb) AS ?imdbid) (SAMPLE(?img) AS ?img) (MAX(?lsx) AS ?links) WHERE {
+  return `SELECT ?film (SAMPLE(?labCs) AS ?lc) (SAMPLE(?labEn) AS ?le) (SAMPLE(?csN) AS ?cn) (SAMPLE(?enN) AS ?en) (SAMPLE(?y) AS ?year) (SAMPLE(?imdb) AS ?imdbid) (SAMPLE(?img) AS ?img) (MAX(?lsx) AS ?links) WHERE {
     ${head} ${where}
+    OPTIONAL { ?film rdfs:label ?labCs. FILTER(LANG(?labCs)="cs") }
+    OPTIONAL { ?film rdfs:label ?labEn. FILTER(LANG(?labEn)="en") }
+    OPTIONAL { ?acs schema:about ?film; schema:isPartOf <https://cs.wikipedia.org/>; schema:name ?csN. }
+    OPTIONAL { ?aen schema:about ?film; schema:isPartOf <https://en.wikipedia.org/>; schema:name ?enN. }
     OPTIONAL { ?film wdt:P577 ?d. BIND(YEAR(?d) AS ?y) }
     OPTIONAL { ?film wdt:P345 ?imdb. }
     OPTIONAL { ?film wdt:P18 ?img. }
     OPTIONAL { ?film wikibase:sitelinks ?lsx. }
-    SERVICE wikibase:label { bd:serviceParam wikibase:language "cs,en". }
-  } GROUP BY ?film ?filmLabel ORDER BY ${order} LIMIT ${lim}${offClause}`;
+  } GROUP BY ?film ORDER BY ${order} LIMIT ${lim}${offClause}`;
 }
 
 function commons(url,w){if(!url)return null;return url.replace('http://','https://')+'?width='+(w||400);}
@@ -129,8 +132,9 @@ function qid(uri){return uri.split('/').pop();}
 
 const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){io.unobserve(e.target);const d=e.target.dataset;wikiPoster(d.title,d.year).then(src=>{if(src){e.target.src=src;e.target.onload=()=>e.target.classList.add('on');}else if(d.fallback){e.target.src=d.fallback;e.target.onload=()=>e.target.classList.add('on');}});}});},{rootMargin:'400px'});
 
+function mkTitle(m){let t=(m.lc&&m.lc.value)||(m.le&&m.le.value)||(m.cn&&m.cn.value)||(m.en&&m.en.value)||qid(m.film.value);return t.replace(/\s*\([^)]*\)\s*$/,x=>/film|seri[aá]l|\d{4}/i.test(x)?'':x).trim();}
 function card(m){
-  const id=qid(m.film.value), title=m.filmLabel?m.filmLabel.value:id, year=m.year?m.year.value:'', imdb=m.imdbid?m.imdbid.value:'';
+  const id=qid(m.film.value), title=mkTitle(m), year=m.year?m.year.value:'', imdb=m.imdbid?m.imdbid.value:'';
   const fb=m.img?commons(m.img.value,400):'';
   return `<div class="card" onclick='openM(${JSON.stringify({id,title,year,imdb,fb}).replace(/'/g,"&#39;")})'>
     <div class="poster"><span class="ph">🎬</span><img data-title="${title.replace(/"/g,'&quot;')}" data-year="${year}" data-fallback="${fb}" alt=""></div>
